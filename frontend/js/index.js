@@ -3,11 +3,15 @@ function login() {
   const pass = document.getElementById("password").value;
 
   if (!user || !pass) {
-    alert("TODO");
+    alert("A felhasználónév és jelszó nem maradhat üresen!");
     return;
   }
 
-  alert("Belépési kísérlet:\nFelhasználó: " + user + "\nJelszó: " + pass);
+  if (user == 'teszt' && pass == 'teszt') {
+    window.location.href = "notes.html";
+  }
+
+  alert("Felhasználónév vagy jelszó nem megfelelő!");
 }
 
 function register() {
