@@ -27,6 +27,11 @@ function saveNote() {
   const title = document.getElementById("noteTitle").value.trim();
   if (!title) return;
 
+  if (title.length > 40) {
+    alert("A jegyzet neve legfeljebb 40 karakter hosszú lehet.");
+    return;
+  }
+
   const notes = getNotes();
   notes.push({ title, content: tempNoteText });
   saveNotes(notes);
@@ -36,6 +41,17 @@ function saveNote() {
   loadNotes();
 }
 
+// --- Új függvény a tartalom modál megnyitásához ---
+function openContentModal(title, content) {
+  document.getElementById("contentModalTitle").textContent = title;
+  document.getElementById("contentModalBody").textContent = content;
+  document.getElementById("contentModal").classList.remove("hidden");
+}
+
+function closeContentModal() {
+  document.getElementById("contentModal").classList.add("hidden");
+}
+
 function loadNotes() {
   const notes = getNotes();
   const list = document.getElementById("noteList");
@@ -43,15 +59,13 @@ function loadNotes() {
 
   notes.forEach((note, index) => {
     const li = document.createElement("li");
-    const titleSpan = document.createElement("span");
-    titleSpan.textContent = note.title;
-    titleSpan.onclick = () => {
-      contentDiv.style.display = contentDiv.style.display === "none" ? "block" : "none";
-    };
+    li.style.userSelect = "none";
 
-    const contentDiv = document.createElement("div");
-    contentDiv.className = "note-content";
-    contentDiv.textContent = note.content;
+    li.textContent = note.title;
+
+    li.onclick = () => {
+      openContentModal(note.title, note.content);
+    };
 
     const delBtn = document.createElement("button");
     delBtn.textContent = "Törlés";
@@ -60,8 +74,6 @@ function loadNotes() {
       deleteNote(index);
     };
 
-    li.appendChild(titleSpan);
-    li.appendChild(contentDiv);
     li.appendChild(delBtn);
     list.appendChild(li);
   });
@@ -81,3 +93,4 @@ function getNotes() {
 function saveNotes(notes) {
   localStorage.setItem("notes", JSON.stringify(notes));
 }
+

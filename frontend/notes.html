@@ -20,15 +20,24 @@
     <ul id="noteList"></ul>
   </div>
 
-  <!-- Modális ablak -->
+  <!-- Jegyzet név megadására szolgáló modális ablak -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
       <h3>Jegyzet neve</h3>
-      <input type="text" id="noteTitle" placeholder="Jegyzet" />
+      <input type="text" id="noteTitle" placeholder="Maximum 40 karakter..." />
       <div class="modal-buttons">
         <button onclick="saveNote()">Mentés</button>
         <button onclick="closeModal()" class="secondary">Mégse</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Jegyzet teljes tartalmának megjelenítő modál -->
+  <div id="contentModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="contentModalTitle"></h3>
+      <p id="contentModalBody" style="white-space: pre-wrap; text-align: left;"></p>
+      <button onclick="closeContentModal()">Bezárás</button>
     </div>
   </div>
 

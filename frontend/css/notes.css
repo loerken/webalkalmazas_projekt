@@ -111,7 +111,7 @@ button.secondary:hover {
   background-color: #b52a37;
 }
 
-/* Modális ablak */
+/* Modális ablakok közös stílusa */
 .modal {
   position: fixed;
   top: 0;
@@ -137,6 +137,12 @@ button.secondary:hover {
   text-align: center;
 }
 
+#contentModal .modal-content {
+  max-width: 600px;    
+  max-height: 80vh;    
+  overflow-y: auto;    
+}
+ 
 .modal-content input {
   width: 100%;
   padding: 10px;
