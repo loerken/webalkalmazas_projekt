@@ -7,12 +7,16 @@
   <link rel="stylesheet" href="css/notes.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Jegyzeteim</h1>
+  <div class="container note-input-container">
+    <h1>Új jegyzet hozzáadása</h1>
     <div class="note-input">
       <textarea id="noteText" placeholder="Új jegyzet..."></textarea>
       <button onclick="addNote()">Hozzáadás</button>
     </div>
+  </div>
+
+  <div class="container note-list-container">
+    <h2>Elmentett jegyzetek</h2>
     <ul id="noteList"></ul>
   </div>
 
