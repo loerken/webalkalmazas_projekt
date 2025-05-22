@@ -93,3 +93,9 @@ button:hover {
   background-color: #b52a37;
 }
 
+#noteList li:hover {
+  background-color: #5661a3;
+  cursor: pointer;
+}
+
+
