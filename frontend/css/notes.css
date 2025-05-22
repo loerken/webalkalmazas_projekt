@@ -7,19 +7,18 @@ body {
   font-family: Arial, sans-serif;
   background-color: #1e1e2f;
   color: #ffffff;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-  padding: 2rem 1rem;
-  gap: 2rem;
 }
 
-.container {
+.container, .saved-container {
   width: 100%;
   max-width: 600px;
   background-color: #2c2f48;
   padding: 20px;
+  margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
@@ -37,14 +36,15 @@ h1, h2 {
 
 textarea {
   width: 100%;
-  /* height: 10em; */
+  min-height: 5em;
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #444;
   background-color: #3a3d5a;
   color: #f1f1f1;
-  resize: vertical;
+  resize: none;
   font-size: 1rem;
+  overflow: hidden;
 }
 
 button {
@@ -62,22 +62,40 @@ button:hover {
   background-color: #2d7cd4;
 }
 
-.note-list-container ul {
+button.secondary {
+  background-color: #6c757d;
+}
+
+button.secondary:hover {
+  background-color: #545b62;
+}
+
+#noteList {
   list-style: none;
   padding: 0;
-  margin: 0;
 }
 
-.note-list-container li {
+#noteList li {
   background-color: #3a3d5a;
   margin-bottom: 10px;
-  padding: 10px 50px 20px 10px;
+  padding: 15px;
   border-radius: 6px;
   position: relative;
-  word-wrap: break-word;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.note-list-container li button {
+#noteList li:hover {
+  background-color: #4a4d6b;
+}
+
+.note-content {
+  margin-top: 10px;
+  display: none;
+  color: #ccc;
+}
+
+#noteList li button {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -89,13 +107,49 @@ button:hover {
   cursor: pointer;
 }
 
-.note-list-container li button:hover {
+#noteList li button:hover {
   background-color: #b52a37;
 }
 
-#noteList li:hover {
-  background-color: #5661a3;
-  cursor: pointer;
+/* Modális ablak */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.modal.hidden {
+  display: none;
+}
 
+.modal-content {
+  background-color: #2c2f48;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #3a3d5a;
+  color: white;
+  font-size: 1rem;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}

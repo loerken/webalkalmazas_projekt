@@ -1,29 +1,41 @@
-// Jegyzetek betöltése localStorage-ból
-window.onload = function() {
+let tempNoteText = "";
+
+window.onload = function () {
   loadNotes();
+
+  const textarea = document.getElementById("noteText");
+  textarea.addEventListener("input", () => {
+    textarea.style.height = "auto";
+    textarea.style.height = textarea.scrollHeight + "px";
+  });
 };
 
-// Jegyzet hozzáadása név bekérésével
-function addNote() {
-  const noteContent = document.getElementById("noteText").value.trim();
-  if (!noteContent) return;
+function openModal() {
+  const text = document.getElementById("noteText").value.trim();
+  if (!text) return;
 
-  const noteName = prompt("Add meg a jegyzet nevét:");
-  if (!noteName || noteName.trim() === "") {
-    alert("A jegyzet név nem lehet üres!");
-    return;
-  }
+  tempNoteText = text;
+  document.getElementById("noteTitle").value = "";
+  document.getElementById("modal").classList.remove("hidden");
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.add("hidden");
+}
+
+function saveNote() {
+  const title = document.getElementById("noteTitle").value.trim();
+  if (!title) return;
 
   const notes = getNotes();
-  notes.push({ name: noteName.trim(), content: noteContent });
+  notes.push({ title, content: tempNoteText });
   saveNotes(notes);
-
   document.getElementById("noteText").value = "";
-  autoResize.call(document.getElementById("noteText"));
+  document.getElementById("noteText").style.height = "auto";
+  closeModal();
   loadNotes();
 }
 
-// Jegyzetek listázása
 function loadNotes() {
   const notes = getNotes();
   const list = document.getElementById("noteList");
@@ -31,10 +43,15 @@ function loadNotes() {
 
   notes.forEach((note, index) => {
     const li = document.createElement("li");
-    li.textContent = note.name;
+    const titleSpan = document.createElement("span");
+    titleSpan.textContent = note.title;
+    titleSpan.onclick = () => {
+      contentDiv.style.display = contentDiv.style.display === "none" ? "block" : "none";
+    };
 
-    // Jegyzet tartalom megjelenítése kattintásra
-    li.onclick = () => alert(note.content);
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "note-content";
+    contentDiv.textContent = note.content;
 
     const delBtn = document.createElement("button");
     delBtn.textContent = "Törlés";
@@ -42,13 +59,14 @@ function loadNotes() {
       e.stopPropagation();
       deleteNote(index);
     };
-    li.appendChild(delBtn);
 
+    li.appendChild(titleSpan);
+    li.appendChild(contentDiv);
+    li.appendChild(delBtn);
     list.appendChild(li);
   });
 }
 
-// Jegyzet törlése index alapján
 function deleteNote(index) {
   const notes = getNotes();
   notes.splice(index, 1);
@@ -56,24 +74,10 @@ function deleteNote(index) {
   loadNotes();
 }
 
-// Jegyzetek lekérése localStorage-ból
 function getNotes() {
   return JSON.parse(localStorage.getItem("notes") || "[]");
 }
 
-// Jegyzetek mentése localStorage-ba
 function saveNotes(notes) {
   localStorage.setItem("notes", JSON.stringify(notes));
 }
-
-// Dinamikus textarea magasság
-const textarea = document.getElementById("noteText");
-if (textarea) {
-  textarea.addEventListener("input", autoResize);
-}
-
-function autoResize() {
-  this.style.height = "auto";
-  this.style.height = this.scrollHeight + "px";
-}
-
