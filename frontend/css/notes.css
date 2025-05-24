@@ -135,18 +135,38 @@ button.secondary:hover {
   width: 90%;
   max-width: 400px;
   text-align: center;
+  position: relative; /* Szükséges a szerkesztés gomb pozicionálásához */
 }
 
 #contentModal .modal-content {
-  max-width: 600px;    
-  max-height: 80vh;    
-  overflow-y: auto;    
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
- 
+
+#editButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: #28a745;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+  color: white;
+  z-index: 10;
+}
+
+#editButton:hover {
+  background-color: #218838;
+}
+
 .modal-content input {
   width: 100%;
   padding: 10px;
-  margin: 15px 0;
+  margin: 15px 0px;
   border-radius: 6px;
   border: 1px solid #444;
   background-color: #3a3d5a;
@@ -155,6 +175,7 @@ button.secondary:hover {
 }
 
 .modal-buttons {
+  padding-top: 20px;
   display: flex;
   justify-content: space-between;
   gap: 10px;

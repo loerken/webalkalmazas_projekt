@@ -1,4 +1,5 @@
 let tempNoteText = "";
+let editingIndex = null;
 
 window.onload = function () {
   loadNotes();
@@ -15,6 +16,7 @@ function openModal() {
   if (!text) return;
 
   tempNoteText = text;
+  editingIndex = null; // új jegyzet
   document.getElementById("noteTitle").value = "";
   document.getElementById("modal").classList.remove("hidden");
 }
@@ -33,23 +35,20 @@ function saveNote() {
   }
 
   const notes = getNotes();
-  notes.push({ title, content: tempNoteText });
+
+  if (editingIndex !== null) {
+    // meglévő jegyzet frissítése
+    notes[editingIndex] = { title, content: tempNoteText };
+  } else {
+    // új jegyzet hozzáadása
+    notes.push({ title, content: tempNoteText });
+  }
+
   saveNotes(notes);
   document.getElementById("noteText").value = "";
   document.getElementById("noteText").style.height = "auto";
   closeModal();
   loadNotes();
-}
-
-// --- Új függvény a tartalom modál megnyitásához ---
-function openContentModal(title, content) {
-  document.getElementById("contentModalTitle").textContent = title;
-  document.getElementById("contentModalBody").textContent = content;
-  document.getElementById("contentModal").classList.remove("hidden");
-}
-
-function closeContentModal() {
-  document.getElementById("contentModal").classList.add("hidden");
 }
 
 function loadNotes() {
@@ -59,13 +58,14 @@ function loadNotes() {
 
   notes.forEach((note, index) => {
     const li = document.createElement("li");
-    li.style.userSelect = "none";
-
-    li.textContent = note.title;
 
     li.onclick = () => {
-      openContentModal(note.title, note.content);
+      openContentModal(note.title, note.content, index);
     };
+
+    const titleSpan = document.createElement("span");
+    titleSpan.textContent = note.title;
+    titleSpan.style.userSelect = "none";
 
     const delBtn = document.createElement("button");
     delBtn.textContent = "Törlés";
@@ -74,6 +74,7 @@ function loadNotes() {
       deleteNote(index);
     };
 
+    li.appendChild(titleSpan);
     li.appendChild(delBtn);
     list.appendChild(li);
   });
@@ -92,5 +93,35 @@ function getNotes() {
 
 function saveNotes(notes) {
   localStorage.setItem("notes", JSON.stringify(notes));
+}
+
+// ----- Teljes tartalom megtekintése/szerkesztése -----
+
+function openContentModal(title, content, index) {
+  editingIndex = index;
+  document.getElementById("contentModalTitle").textContent = title;
+  const textarea = document.getElementById("contentModalBody");
+  textarea.value = content;
+  textarea.setAttribute("readonly", true);
+  document.getElementById("contentModal").classList.remove("hidden");
+}
+
+function enableEdit() {
+  const textarea = document.getElementById("contentModalBody");
+  textarea.removeAttribute("readonly");
+  textarea.focus();
+}
+
+function saveEdit() {
+  const notes = getNotes();
+  const newContent = document.getElementById("contentModalBody").value;
+  notes[editingIndex].content = newContent;
+  saveNotes(notes);
+  loadNotes();
+  closeContentModal();
+}
+
+function closeContentModal() {
+  document.getElementById("contentModal").classList.add("hidden");
 }
 

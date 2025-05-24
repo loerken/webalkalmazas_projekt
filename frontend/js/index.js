@@ -11,7 +11,11 @@ function login() {
     window.location.href = "notes.html";
   }
 
-  alert("Felhasználónév vagy jelszó nem megfelelő!");
+  else  {
+    alert("Felhasználónév vagy jelszó nem megfelelő!");
+  }
+  
+
 }
 
 function register() {
