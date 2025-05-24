@@ -140,8 +140,18 @@ button.secondary:hover {
 
 #contentModal .modal-content {
   max-width: 600px;
-  max-height: 80vh;
+  height: 80vh;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#contentModal textarea {
+  flex: 1;
+  min-height: 200px;
+  /* max-height: 50vh; */
+  overflow-y: auto;
+  resize: vertical;
 }
 
 #editButton {
