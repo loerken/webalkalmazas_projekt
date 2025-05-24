@@ -190,3 +190,26 @@ button.secondary:hover {
   justify-content: space-between;
   gap: 10px;
 }
+
+/* Scrollbar stílus a modál ablakhoz és textarea-hoz */
+#contentModal .modal-content::-webkit-scrollbar,
+#contentModal textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+#contentModal .modal-content::-webkit-scrollbar-track,
+#contentModal textarea::-webkit-scrollbar-track {
+  background: #2c2f48;
+  border-radius: 4px;
+}
+
+#contentModal .modal-content::-webkit-scrollbar-thumb,
+#contentModal textarea::-webkit-scrollbar-thumb {
+  background: #4f9dff;
+  border-radius: 4px;
+}
+
+#contentModal .modal-content::-webkit-scrollbar-thumb:hover,
+#contentModal textarea::-webkit-scrollbar-thumb:hover {
+  background: #2d7cd4;
+}

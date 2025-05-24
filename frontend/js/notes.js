@@ -118,7 +118,9 @@ function saveEdit() {
   notes[editingIndex].content = newContent;
   saveNotes(notes);
   loadNotes();
-  closeContentModal();
+  // closeContentModal();
+  const textarea = document.getElementById("contentModalBody");
+  textarea.setAttribute("readonly", true);
 }
 
 function closeContentModal() {
