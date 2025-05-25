@@ -127,3 +127,15 @@ function closeContentModal() {
   document.getElementById("contentModal").classList.add("hidden");
 }
 
+function logout() {
+  document.getElementById("logoutModal").classList.remove("hidden");
+}
+
+function closeLogoutModal() {
+  document.getElementById("logoutModal").classList.add("hidden");
+}
+
+function confirmLogout() {
+  window.location.href = "index.html";
+}
+

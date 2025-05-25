@@ -213,3 +213,38 @@ button.secondary:hover {
 #contentModal textarea::-webkit-scrollbar-thumb:hover {
   background: #2d7cd4;
 }
+
+.logout-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  z-index: 1000;
+}
+
+.logout-btn:hover {
+  background-color: #b52a37;
+}
+
+#logoutModal p {
+  color: #f1f1f1;
+  margin: 10px 15px 0;
+  font-size: 1rem;
+}
+
+#logoutModal .modal-content {
+  max-width: 300px;
+  padding: 15px;
+}
+
+#logoutModal h3 {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
