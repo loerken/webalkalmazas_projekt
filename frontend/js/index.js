@@ -3,22 +3,26 @@ function login() {
   const pass = document.getElementById("password").value;
 
   if (!user || !pass) {
-    alert("A felhasználónév és jelszó nem maradhat üresen!");
+    showError("A felhasználónév és jelszó nem maradhat üresen!");
     return;
   }
 
   if (user == 'teszt' && pass == 'teszt') {
     window.location.href = "notes.html";
+  } else {
+    showError("Felhasználónév vagy jelszó nem megfelelő!");
   }
+}
 
-  else  {
-    alert("Felhasználónév vagy jelszó nem megfelelő!");
-  }
-  
+function showError(message) {
+  document.getElementById("errorMessage").textContent = message;
+  document.getElementById("errorModal").classList.remove("hidden");
+}
 
+function closeErrorModal() {
+  document.getElementById("errorModal").classList.add("hidden");
 }
 
 function register() {
-  alert("TODO");
+  showError("A regisztráció funkció még nem elérhető!");
 }
-
