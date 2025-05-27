@@ -44,8 +44,9 @@ public class AuthController {
         return ResponseEntity.ok("Sikeres regisztráció.");
     }
     @PostMapping("/login")
-    public String createAuthenticationToken(AuthenticationRequest authenticationRequest) {
 
+    public String createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
+        System.out.println("szerbusz");
         // AUTHENTIKÁLJUK A USERT
         // HIBAS CREDENTAILS ESETEN BadCredentailsException
         // HA A KOVETKEZO SOR LEMEGY SIKERESEN AKKOR TUDJUK HOGY AUTHENTIKALVA VAGYUNK

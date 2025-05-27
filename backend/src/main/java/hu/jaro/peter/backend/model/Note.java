@@ -1,5 +1,6 @@
 package hu.jaro.peter.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,6 +20,7 @@ public class Note {
     private String content;
 
     @ManyToOne
+    @JsonIgnore
     private User owner;
 
     public Note() {
