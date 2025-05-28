@@ -1,10 +1,7 @@
 package hu.jaro.peter.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +14,7 @@ public class Note {
     private Long id;
 
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne
