@@ -58,7 +58,7 @@ async function registerUser() {
       showError("Sikeres regisztráció! Most már bejelentkezhetsz.");
     } else {
         let errorText = await response.text();
-        showError("Hiba regisztráció közben: " + errorText);
+        showError(errorText);
     }
   } catch (error) {
     console.error(error);
