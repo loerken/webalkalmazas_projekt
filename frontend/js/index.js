@@ -37,7 +37,7 @@ function closeRegisterModal() {
   document.getElementById("registerModal").classList.add("hidden");
 }
 
-function registerUser() {
+async function registerUser() {
   const username = document.getElementById("registerUsername").value.trim();
   const password = document.getElementById("registerPassword").value.trim();
 
@@ -46,17 +46,22 @@ function registerUser() {
     return;
   }
 
-  const users = JSON.parse(localStorage.getItem("users") || "[]");
+  try {
+    const response = await fetch("http://localhost:8080/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
 
-  const userExists = users.some(u => u.username === username);
-  if (userExists) {
-    showError("Ez a felhasználónév már foglalt!");
-    return;
+    if (response.ok) {
+      closeRegisterModal();
+      showError("Sikeres regisztráció! Most már bejelentkezhetsz.");
+    } else {
+        let errorText = await response.text();
+        showError("Hiba regisztráció közben: " + errorText);
+    }
+  } catch (error) {
+    console.error(error);
+    showError("Nem sikerült kapcsolódni a szerverhez.");
   }
-
-  users.push({ username, password });
-  localStorage.setItem("users", JSON.stringify(users));
-  closeRegisterModal();
-  showError("Sikeres regisztráció! Most már bejelentkezhetsz.");
 }
-
