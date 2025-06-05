@@ -1,7 +1,7 @@
 let tempNoteText = "";
 let editingIndex = null;
 
-window.onload = function () {
+window.onload = function() {
   loadNotes();
 
   const textarea = document.getElementById("noteText");
@@ -25,7 +25,7 @@ function closeModal() {
   document.getElementById("modal").classList.add("hidden");
 }
 
-function saveNote() {
+async function saveNote() {
   const title = document.getElementById("noteTitle").value.trim();
   if (!title) return;
 
@@ -34,58 +34,102 @@ function saveNote() {
     return;
   }
 
-  const notes = getNotes();
+  const token = localStorage.getItem("jwt");
 
-  if (editingIndex !== null) {
-    // meglévő jegyzet frissítése
-    notes[editingIndex] = { title, content: tempNoteText };
-  } else {
-    // új jegyzet hozzáadása
-    notes.push({ title, content: tempNoteText });
+  try {
+    const response = await fetch("http://localhost:8080/api/notes/new", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        title: title,
+        content: tempNoteText
+      })
+    });
+
+    if (response.ok) {
+      closeModal();
+      document.getElementById("noteText").value = "";
+      document.getElementById("noteText").style.height = "auto";
+      loadNotes();
+    } else {
+      alert("Nem sikerült elmenteni a jegyzetet.");
+    }
+  } catch (e) {
+    console.error("Hiba:", e);
+  }
+}
+
+
+
+async function loadNotes() {
+  const token = localStorage.getItem("jwt");
+  if (!token) {
+    alert("Nem vagy bejelentkezve!");
+    window.location.href = "index.html";
+    return;
   }
 
-  saveNotes(notes);
-  document.getElementById("noteText").value = "";
-  document.getElementById("noteText").style.height = "auto";
-  closeModal();
-  loadNotes();
+  try {
+    const response = await fetch("http://localhost:8080/api/notes/all", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    if (response.ok) {
+      const notes = await response.json();
+      const list = document.getElementById("noteList");
+      list.innerHTML = "";
+
+      notes.forEach((note, index) => {
+        const li = document.createElement("li");
+        li.onclick = () => openContentModal(note.title, note.content, note.id);
+
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = note.title;
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Törlés";
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteNote(note.id);
+        };
+
+        li.appendChild(titleSpan);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
+    } else {
+      console.error("Hiba a jegyzetek betöltésekor");
+    }
+  } catch (e) {
+    console.error("Hiba:", e);
+  }
 }
 
-function loadNotes() {
-  const notes = getNotes();
-  const list = document.getElementById("noteList");
-  list.innerHTML = "";
 
-  notes.forEach((note, index) => {
-    const li = document.createElement("li");
+async function deleteNote(id) {
+  const token = localStorage.getItem("jwt");
 
-    li.onclick = () => {
-      openContentModal(note.title, note.content, index);
-    };
+  try {
+    const response = await fetch(`http://localhost:8080/api/notes/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
 
-    const titleSpan = document.createElement("span");
-    titleSpan.textContent = note.title;
-    titleSpan.style.userSelect = "none";
-
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "Törlés";
-    delBtn.onclick = (e) => {
-      e.stopPropagation();
-      deleteNote(index);
-    };
-
-    li.appendChild(titleSpan);
-    li.appendChild(delBtn);
-    list.appendChild(li);
-  });
+    if (response.ok) {
+      loadNotes();
+    } else {
+      alert("Nem sikerült törölni a jegyzetet.");
+    }
+  } catch (e) {
+    console.error("Hiba:", e);
+  }
 }
 
-function deleteNote(index) {
-  const notes = getNotes();
-  notes.splice(index, 1);
-  saveNotes(notes);
-  loadNotes();
-}
 
 function getNotes() {
   return JSON.parse(localStorage.getItem("notes") || "[]");
