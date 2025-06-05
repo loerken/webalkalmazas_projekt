@@ -54,6 +54,7 @@ async function registerUser() {
 
   if (!username || !password) {
     showError("A felhasználónév és jelszó nem lehet üres!");
+    closeRegisterModal();
     return;
   }
 
@@ -65,10 +66,11 @@ async function registerUser() {
     });
 
     if (response.ok) {
-      closeRegisterModal();
       showError("Sikeres regisztráció! Most már bejelentkezhetsz.");
+      closeRegisterModal();
     } else {
       let errorText = await response.text();
+      closeRegisterModal();
       showError(errorText);
     }
   } catch (error) {
