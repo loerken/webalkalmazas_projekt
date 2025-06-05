@@ -1,7 +1,6 @@
 let tempNoteText = "";
-let editingIndex = null;
 
-window.onload = function() {
+window.onload = function () {
   loadNotes();
 
   const textarea = document.getElementById("noteText");
@@ -11,12 +10,59 @@ window.onload = function() {
   });
 };
 
+async function loadNotes() {
+  const token = localStorage.getItem("jwt");
+  if (!token) {
+    alert("Nem vagy bejelentkezve!");
+    window.location.href = "index.html";
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:8080/api/notes/all", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    if (response.ok) {
+      const notes = await response.json();
+      const list = document.getElementById("noteList");
+      list.innerHTML = "";
+
+      notes.forEach((note) => {
+        const li = document.createElement("li");
+
+        li.onclick = () => {
+          openContentModal(note.title, note.content, note.id);
+        };
+
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = note.title;
+        titleSpan.style.userSelect = "none";
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Törlés";
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteNote(note.id);
+        };
+
+        li.appendChild(titleSpan);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
+    } else {
+      alert("Nem sikerült lekérni a jegyzeteket.");
+    }
+  } catch (e) {
+    console.error("Hiba:", e);
+  }
+}
+
 function openModal() {
   const text = document.getElementById("noteText").value.trim();
   if (!text) return;
 
   tempNoteText = text;
-  editingIndex = null; // új jegyzet
   document.getElementById("noteTitle").value = "";
   document.getElementById("modal").classList.remove("hidden");
 }
@@ -43,10 +89,7 @@ async function saveNote() {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
       },
-      body: JSON.stringify({
-        title: title,
-        content: tempNoteText
-      })
+      body: JSON.stringify({ title: title, content: tempNoteText })
     });
 
     if (response.ok) {
@@ -62,62 +105,65 @@ async function saveNote() {
   }
 }
 
+function openContentModal(title, content, noteId) {
+  document.getElementById("contentModalTitle").textContent = title;
+  const textarea = document.getElementById("contentModalBody");
+  textarea.value = content;
+  textarea.setAttribute("readonly", true);
+  textarea.dataset.noteId = noteId;
+  document.getElementById("contentModal").classList.remove("hidden");
+}
 
+function enableEdit() {
+  const textarea = document.getElementById("contentModalBody");
+  textarea.removeAttribute("readonly");
+  textarea.focus();
+}
 
-async function loadNotes() {
+async function saveEdit() {
+  const textarea = document.getElementById("contentModalBody");
+  const noteId = textarea.dataset.noteId;
+  const newContent = textarea.value;
+  const title = document.getElementById("contentModalTitle").textContent;
   const token = localStorage.getItem("jwt");
-  if (!token) {
-    alert("Nem vagy bejelentkezve!");
-    window.location.href = "index.html";
+
+  if (!noteId) {
+    alert("Hiányzik a jegyzet azonosítója.");
     return;
   }
 
   try {
-    const response = await fetch("http://localhost:8080/api/notes/all", {
-      headers: { "Authorization": "Bearer " + token }
+    const response = await fetch(`http://localhost:8080/api/notes/${noteId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        title: title,
+        content: newContent
+      })
     });
 
     if (response.ok) {
-      const notes = await response.json();
-      const list = document.getElementById("noteList");
-      list.innerHTML = "";
-
-      notes.forEach((note, index) => {
-        const li = document.createElement("li");
-        li.onclick = () => openContentModal(note.title, note.content, note.id);
-
-        const titleSpan = document.createElement("span");
-        titleSpan.textContent = note.title;
-
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "Törlés";
-        delBtn.onclick = (e) => {
-          e.stopPropagation();
-          deleteNote(note.id);
-        };
-
-        li.appendChild(titleSpan);
-        li.appendChild(delBtn);
-        list.appendChild(li);
-      });
+      textarea.setAttribute("readonly", true);
+      closeContentModal();
+      loadNotes();
     } else {
-      console.error("Hiba a jegyzetek betöltésekor");
+      alert("Nem sikerült frissíteni a jegyzetet.");
     }
   } catch (e) {
     console.error("Hiba:", e);
   }
 }
 
-
-async function deleteNote(id) {
+async function deleteNote(noteId) {
   const token = localStorage.getItem("jwt");
 
   try {
-    const response = await fetch(`http://localhost:8080/api/notes/${id}`, {
+    const response = await fetch(`http://localhost:8080/api/notes/${noteId}`, {
       method: "DELETE",
-      headers: {
-        "Authorization": "Bearer " + token
-      }
+      headers: { "Authorization": "Bearer " + token }
     });
 
     if (response.ok) {
@@ -128,43 +174,6 @@ async function deleteNote(id) {
   } catch (e) {
     console.error("Hiba:", e);
   }
-}
-
-
-function getNotes() {
-  return JSON.parse(localStorage.getItem("notes") || "[]");
-}
-
-function saveNotes(notes) {
-  localStorage.setItem("notes", JSON.stringify(notes));
-}
-
-// ----- Teljes tartalom megtekintése/szerkesztése -----
-
-function openContentModal(title, content, index) {
-  editingIndex = index;
-  document.getElementById("contentModalTitle").textContent = title;
-  const textarea = document.getElementById("contentModalBody");
-  textarea.value = content;
-  textarea.setAttribute("readonly", true);
-  document.getElementById("contentModal").classList.remove("hidden");
-}
-
-function enableEdit() {
-  const textarea = document.getElementById("contentModalBody");
-  textarea.removeAttribute("readonly");
-  textarea.focus();
-}
-
-function saveEdit() {
-  const notes = getNotes();
-  const newContent = document.getElementById("contentModalBody").value;
-  notes[editingIndex].content = newContent;
-  saveNotes(notes);
-  loadNotes();
-  // closeContentModal();
-  const textarea = document.getElementById("contentModalBody");
-  textarea.setAttribute("readonly", true);
 }
 
 function closeContentModal() {
@@ -180,6 +189,6 @@ function closeLogoutModal() {
 }
 
 function confirmLogout() {
+  localStorage.removeItem("jwt");
   window.location.href = "index.html";
 }
-
