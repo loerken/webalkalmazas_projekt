@@ -1,4 +1,4 @@
-function login() {
+async function login() {
   const user = document.getElementById("username").value.trim();
   const pass = document.getElementById("password").value.trim();
 
@@ -7,16 +7,27 @@ function login() {
     return;
   }
 
-  const users = JSON.parse(localStorage.getItem("users") || "[]");
+  try {
+    const response = await fetch("http://localhost:8080/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: user, password: pass })
+    });
 
-  const validUser = users.find(u => u.username === user && u.password === pass);
-
-  if (validUser || (user === 'teszt' && pass === 'teszt')) {
-    window.location.href = "notes.html";
-  } else {
-    showError("Felhasználónév vagy jelszó nem megfelelő!");
+    if (response.ok) {
+      const token = await response.text();
+      localStorage.setItem("jwt", token); // Token elmentése
+      window.location.href = "notes.html";
+    } else {
+      const err = await response.text();
+      showError(err || "Hibás bejelentkezés.");
+    }
+  } catch (e) {
+    console.error(e);
+    showError("Nem sikerült kapcsolódni a szerverhez.");
   }
 }
+
 
 function showError(message) {
   document.getElementById("errorMessage").textContent = message;
@@ -57,8 +68,8 @@ async function registerUser() {
       closeRegisterModal();
       showError("Sikeres regisztráció! Most már bejelentkezhetsz.");
     } else {
-        let errorText = await response.text();
-        showError(errorText);
+      let errorText = await response.text();
+      showError(errorText);
     }
   } catch (error) {
     console.error(error);
